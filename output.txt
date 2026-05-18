@@ -1,0 +1,26 @@
+Word Count Results
+==================
+parallel                  : 5513
+thread                    : 5485
+computer                  : 5551
+science                   : 5537
+process                   : 5558
+system                    : 5527
+speed                     : 5629
+master                    : 5520
+core                      : 5477
+quick                     : 5620
+data                      : 5450
+memory                    : 5620
+distributed               : 5607
+reduce                    : 5620
+map                       : 5594
+network                   : 5600
+worker                    : 5507
+the                       : 5579
+peed                      : 1
+ne                        : 1
+twork                     : 1
+orker                     : 1
+ma                        : 2
+distribute                : 1
