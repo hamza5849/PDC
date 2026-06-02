@@ -1,0 +1,7 @@
+.venv/
+mapreduce
+output.txt
+__pycache__/
+make
+sudo
+mpirun
