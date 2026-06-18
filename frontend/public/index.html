@@ -1,175 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MPI Array Sum Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#080c14;--s1:#0f1623;--s2:#162033;--bd:#1d2d45;--ac:#00d4ff;--g:#00ff9d;--or:#ff6b35;--pu:#a78bfa;--tx:#e2e8f0;--tx2:#64748b;--tx3:#2d3f55}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--tx);font-family:'Syne',sans-serif;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px;position:relative}
-header{padding:28px 0 20px;border-bottom:1px solid var(--bd);margin-bottom:28px}
-.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.brand h1{font-size:24px;font-weight:800;letter-spacing:-.5px}
-.brand h1 em{color:var(--ac);font-style:normal}
-.brand p{font-size:11px;color:var(--tx2);font-family:'JetBrains Mono',monospace;margin-top:3px}
-.pill{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--bd);border-radius:999px;padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx2)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--tx3)}
-.dot.run{background:var(--or);animation:bl .8s infinite}
-.dot.ok{background:var(--g)}
-@keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
-.mc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;position:relative;overflow:hidden}
-.mc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
-.mc.b::after{background:var(--ac)}.mc.g::after{background:var(--g)}.mc.o::after{background:var(--or)}.mc.p::after{background:var(--pu)}
-.ml{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);font-family:'JetBrains Mono',monospace;margin-bottom:8px}
-.mv{font-size:28px;font-weight:800}.ms{font-size:11px;color:var(--tx3);margin-top:4px;font-family:'JetBrains Mono',monospace}
-.main{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-bottom:18px}
-@media(max-width:900px){.main{grid-template-columns:1fr}}
-.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:22px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.25),transparent)}
-.ct{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);margin-bottom:18px;display:flex;align-items:center;gap:7px}
-.ctd{width:6px;height:6px;border-radius:50%;background:var(--ac)}
-label{font-size:11px;color:var(--tx2);display:block;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
-.slrow{display:flex;align-items:center;gap:12px}
-input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bd);outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac);cursor:pointer;box-shadow:0 0 8px rgba(0,212,255,.4)}
-.sv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--ac);min-width:22px;text-align:center}
-.fg{margin-bottom:16px}
-.div{height:1px;background:var(--bd);margin:16px 0}
-.rbtn{width:100%;padding:14px;background:linear-gradient(135deg,var(--ac),#0099bb);border:none;border-radius:10px;color:#000;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .1s}
-.rbtn:hover{opacity:.88}.rbtn:active{transform:scale(.98)}.rbtn:disabled{opacity:.4;cursor:not-allowed}
-.wlist{display:flex;flex-direction:column;gap:9px}
-.wr{display:flex;align-items:center;gap:10px}
-.wn{font-family:'JetBrains Mono',monospace;font-size:11px;min-width:75px;color:var(--tx2)}
-.wbb{flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;border:1px solid var(--bd)}
-.wbf{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);width:0%;display:flex;align-items:center;padding-left:7px;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#000}
-.ws2{font-size:10px;padding:2px 8px;border-radius:99px;font-family:'JetBrains Mono',monospace;min-width:54px;text-align:center}
-.wi{background:var(--s2);color:var(--tx3);border:1px solid var(--bd)}.wm{background:rgba(255,107,53,.15);color:var(--or);border:1px solid rgba(255,107,53,.3)}.wd{background:rgba(0,255,157,.1);color:var(--g);border:1px solid rgba(0,255,157,.3)}
-.log{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:13px;font-family:'JetBrains Mono',monospace;font-size:11px;height:220px;overflow-y:auto;line-height:1.9}
-.log::-webkit-scrollbar{width:3px}.log::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
-.lt{color:var(--tx3)}.lm{color:var(--ac)}.lw{color:var(--g)}.ld{color:var(--g);font-weight:700}.li{color:var(--tx2)}.le{color:#f87171}
-.result-box{background:var(--s2);border:2px solid var(--g);border-radius:12px;padding:24px;text-align:center;margin-top:10px}
-.result-label{font-size:12px;color:var(--tx2);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.result-value{font-size:48px;font-weight:800;color:var(--g)}
-.info-text{font-size:12px;color:var(--tx2);font-family:'JetBrains Mono',monospace;line-height:1.6}
-footer{text-align:center;padding:20px 0;color:var(--tx3);font-size:10px;font-family:'JetBrains Mono',monospace;border-top:1px solid var(--bd)}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MPI MapReduce - Word Count</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+    h1 { text-align: center; color: #58a6ff; margin-bottom: 6px; font-size: 1.8rem; }
+    .subtitle { text-align: center; color: #8b949e; margin-bottom: 24px; font-size: 0.9rem; }
+
+    .controls { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    label { color: #8b949e; font-size: 0.9rem; }
+    select {
+      background: #161b22; color: #c9d1d9; border: 1px solid #30363d;
+      padding: 8px 14px; border-radius: 6px; font-size: 0.95rem;
+    }
+    button {
+      background: #238636; color: #fff; border: none;
+      padding: 10px 28px; border-radius: 6px; font-size: 1rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    button:hover { background: #2ea043; }
+    button:disabled { background: #3d4d3d; cursor: not-allowed; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-card {
+      background: #161b22; border: 1px solid #30363d;
+      border-radius: 8px; padding: 16px; text-align: center;
+    }
+    .stat-card .val { font-size: 1.6rem; font-weight: bold; color: #58a6ff; }
+    .stat-card .lbl { font-size: 0.78rem; color: #8b949e; margin-top: 4px; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    @media(max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    .panel { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+    .panel h3 { color: #58a6ff; margin-bottom: 12px; font-size: 1rem; }
+
+    .word-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 0.85rem; }
+    .word-bar .wlabel { width: 110px; text-align: right; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .word-bar .track { flex: 1; background: #21262d; border-radius: 4px; height: 14px; }
+    .word-bar .fill { height: 14px; border-radius: 4px; background: #1f6feb; transition: width 0.5s; }
+    .word-bar .cnt { width: 40px; color: #8b949e; }
+
+    .log-box {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+      padding: 14px; font-family: monospace; font-size: 0.78rem;
+      color: #8b949e; max-height: 260px; overflow-y: auto; white-space: pre-wrap;
+    }
+    .log-box .master { color: #58a6ff; }
+    .log-box .worker { color: #3fb950; }
+    .log-box .result { color: #f0883e; }
+
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #30363d; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <div class="hdr">
-    <div class="brand">
-      <h1>MPI <em>Array Sum</em></h1>
-      <p>Assignment Q4 · Sum of 100 Integers · Live MPI Backend</p>
-    </div>
-    <div class="pill"><div class="dot" id="sdot"></div><span id="stxt">idle</span></div>
-  </div>
-</header>
-<div class="metrics">
-  <div class="mc b"><div class="ml">processes (np)</div><div class="mv" id="m1">—</div><div class="ms">1 master + N workers</div></div>
-  <div class="mc g"><div class="ml">total sum</div><div class="mv" id="m2">—</div><div class="ms">of 100 integers</div></div>
-  <div class="mc o"><div class="ml">exec time (ms)</div><div class="mv" id="m3">—</div><div class="ms">wall clock</div></div>
-  <div class="mc p"><div class="ml">throughput</div><div class="mv" id="m4">—</div><div class="ms">ints / sec</div></div>
+
+<h1>⚡ MPI MapReduce — Word Count</h1>
+<p class="subtitle">Distributed word frequency analysis using Master-Worker architecture</p>
+
+<div class="controls">
+  <label>MPI Processes:
+    <select id="npSelect">
+      <option value="2">2 (1 worker)</option>
+      <option value="3">3 (2 workers)</option>
+      <option value="4" selected>4 (3 workers)</option>
+      <option value="5">5 (4 workers)</option>
+      <option value="6">6 (5 workers)</option>
+      <option value="8">8 (7 workers)</option>
+    </select>
+  </label>
+  <button id="runBtn" onclick="runJob()">▶ Run MapReduce</button>
 </div>
-<div class="main">
-  <div class="card">
-    <div class="ct"><div class="ctd"></div>configuration</div>
-    <div class="fg">
-      <label>number of processes (np)</label>
-      <div class="slrow">
-        <input type="range" min="2" max="8" value="4" id="np" step="1" oninput="npChange()">
-        <div class="sv" id="npv">4</div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px">
-        <span style="font-size:10px;color:var(--tx3);font-family:monospace">2</span>
-        <span style="font-size:10px;color:var(--tx3);font-family:monospace">1 master + <span id="wc">3</span> workers</span>
-        <span style="font-size:10px;color:var(--tx3);font-family:monospace">8</span>
-      </div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val" id="sUnique">—</div><div class="lbl">Unique Words</div></div>
+  <div class="stat-card"><div class="val" id="sTime">—</div><div class="lbl">Exec Time (s)</div></div>
+  <div class="stat-card"><div class="val" id="sProcs">—</div><div class="lbl">Processes</div></div>
+  <div class="stat-card"><div class="val" id="sWorkers">—</div><div class="lbl">Workers</div></div>
+  <div class="stat-card"><div class="val" id="sThroughput">—</div><div class="lbl">Words/sec</div></div>
+</div>
+
+<div class="two-col">
+  <div class="panel">
+    <h3>📊 Top 20 Words</h3>
+    <div id="wordBars">
+      <p style="color:#8b949e;font-size:0.85rem;">Run the job to see results.</p>
     </div>
-    <div class="fg">
-      <label>assignment requirement</label>
-      <div class="info-text">
-        Computes the sum of an array containing 100 integers using MPI. <br><br>
-        • Data partitioning strategy<br>
-        • Process communication model<br>
-        • Result aggregation mechanism
-      </div>
-    </div>
-    <div class="div"></div>
-    <button class="rbtn" id="rbtn" onclick="run()">▶ RUN MPI ARRAY SUM</button>
   </div>
-  <div style="display:flex;flex-direction:column;gap:18px">
-    <div class="card">
-      <div class="ct"><div class="ctd" style="background:var(--g)"></div>worker activity</div>
-      <div class="wlist" id="wlist"><div style="text-align:center;padding:20px;color:var(--tx3);font-size:11px">configure and run to see workers</div></div>
-    </div>
-    <div class="card" style="flex:1">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div class="ct" style="margin:0"><div class="ctd" style="background:var(--or)"></div>execution log</div>
-      </div>
-      <div class="log" id="log">waiting for job...</div>
-    </div>
+  <div class="panel">
+    <h3>📈 Word Frequency Chart</h3>
+    <canvas id="wordChart" height="260"></canvas>
   </div>
 </div>
-<div class="card" style="margin-bottom:18px">
-  <div class="ct"><div class="ctd" style="background:var(--g)"></div>final result</div>
-  <div class="result-box">
-    <div class="result-label">Total Sum of 100 Integers</div>
-    <div class="result-value" id="finalSum">—</div>
-  </div>
-</div>
-<footer>PDC Assignment · MPI Array Sum Implementation</footer>
+
+<div class="panel" style="margin-bottom:24px;">
+  <h3>🖥️ Execution Log</h3>
+  <div class="log-box" id="logBox">Waiting for job...</div>
 </div>
 
 <script>
-const WC=['#00ff9d','#a78bfa','#fb923c','#f472b6','#facc15','#34d399','#60a5fa'];
-let logN=0;
-function npChange(){const v=document.getElementById('np').value;document.getElementById('npv').textContent=v;document.getElementById('wc').textContent=v-1;}
-function setSt(s){const d=document.getElementById('sdot'),t=document.getElementById('stxt');d.className='dot'+(s==='run'?' run':s==='ok'?' ok':'');t.textContent=s==='run'?'running...':s==='ok'?'complete':'idle';}
-function log(msg,type='i'){const b=document.getElementById('log');if(logN===0)b.innerHTML='';logN++;const now=new Date();const ts=now.toTimeString().split(' ')[0]+'.'+String(now.getMilliseconds()).padStart(3,'0');const d=document.createElement('div');d.innerHTML=`<span class="lt">[${ts}]</span> <span class="l${type}">${msg}</span>`;b.appendChild(d);b.scrollTop=b.scrollHeight;}
-function buildWorkers(n,reset=false){const l=document.getElementById('wlist');l.innerHTML='';const mr=document.createElement('div');mr.className='wr';mr.innerHTML=`<span class="wn" style="color:var(--ac)">master</span><div class="wbb"><div class="wbf" id="wb-m" style="background:var(--ac);width:${reset?0:100}%"></div></div><span class="ws2 ${reset?'wi':'wd'}" id="wst-m">${reset?'idle':'coord'}</span>`;l.appendChild(mr);for(let i=1;i<=n;i++){const c=WC[(i-1)%WC.length];const r=document.createElement('div');r.className='wr';r.innerHTML=`<span class="wn" style="color:${c}">worker ${i}</span><div class="wbb"><div class="wbf" id="wb-${i}" style="background:${c};width:0%"></div></div><span class="ws2 wi" id="wst-${i}">idle</span>`;l.appendChild(r);}}
+let chartInstance = null;
 
-async function run(){
-  const np=parseInt(document.getElementById('np').value);
-  document.getElementById('rbtn').disabled=true;setSt('run');buildWorkers(np-1);
-  log(`submitting job: np=${np}, array size=100`,'i');
-  const wbm=document.getElementById('wb-m');if(wbm)wbm.style.width='100%';
-  const wstm=document.getElementById('wst-m');if(wstm){wstm.className='ws2 wm';wstm.textContent='active';}
-  for(let i=1;i<=np-1;i++){await new Promise(r=>setTimeout(r,120));const ws=document.getElementById(`wst-${i}`);if(ws){ws.className='ws2 wm';ws.textContent='map';}log(`[Master] sent chunk to Worker ${i}`,'m');}
-  
-  try{
-    const res=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({np})});
-    const data=await res.json();
-    if(data.success){
-      const lines=data.log.split('\n').filter(l=>l.trim());
-      for(const line of lines){const type=line.includes('[Master]')?'m':line.includes('[Worker')?'w':line.includes('RESULTS')||line.includes('=====')?'d':'i';log(line,type);await new Promise(r=>setTimeout(r,35));}
-      
-      const workers=np-1;
-      for(let i=1;i<=workers;i++){const pct=Math.round(100/workers);const wb=document.getElementById(`wb-${i}`);if(wb)wb.style.width=pct+'%';const wst=document.getElementById(`wst-${i}`);if(wst){wst.className='ws2 wd';wst.textContent='done';}}
-      const wstm2=document.getElementById('wst-m');if(wstm2){wstm2.className='ws2 wd';wstm2.textContent='done';}
-      
-      const totalSum=data.total_sum;
-      const thru=data.elapsed>0?Math.round(100/(data.elapsed/1000)):0;
-      
-      document.getElementById('m1').textContent=np;
-      document.getElementById('m2').textContent=totalSum;
-      document.getElementById('m3').textContent=data.elapsed;
-      document.getElementById('m4').textContent=thru>1000?(thru/1000).toFixed(1)+'k':thru;
-      document.getElementById('finalSum').textContent=totalSum;
-      
-      setSt('ok');
-    }else{log('ERROR: '+data.error,'e');setSt('');}
-  }catch(e){log('ERROR: cannot reach backend. Is Flask running on port 5000?','e');setSt('');}
-  document.getElementById('rbtn').disabled=false;
+async function runJob() {
+  const np = parseInt(document.getElementById('npSelect').value);
+  const btn = document.getElementById('runBtn');
+  const log = document.getElementById('logBox');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Running...';
+  log.innerHTML = 'Starting MPI job with ' + np + ' processes...\n';
+
+  try {
+    const res = await fetch('/api/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ np })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      log.textContent = 'Error: ' + data.error;
+      return;
+    }
+
+    // Stats
+    document.getElementById('sUnique').textContent = data.unique_words.toLocaleString();
+    document.getElementById('sTime').textContent = data.exec_time.toFixed(4);
+    document.getElementById('sProcs').textContent = data.processes;
+    document.getElementById('sWorkers').textContent = data.workers;
+    document.getElementById('sThroughput').textContent = data.throughput.toLocaleString();
+
+    // Word bars
+    const bars = document.getElementById('wordBars');
+    bars.innerHTML = '';
+    const maxCount = data.top_words.length > 0 ? data.top_words[0].count : 1;
+    data.top_words.forEach(w => {
+      const pct = Math.round((w.count / maxCount) * 100);
+      bars.innerHTML += `
+        <div class="word-bar">
+          <div class="wlabel">${w.word}</div>
+          <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+          <div class="cnt">${w.count}</div>
+        </div>`;
+    });
+
+    // Chart
+    const labels = data.top_words.map(w => w.word);
+    const counts = data.top_words.map(w => w.count);
+    if (chartInstance) chartInstance.destroy();
+    const ctx = document.getElementById('wordChart').getContext('2d');
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Word Count',
+          data: counts,
+          backgroundColor: '#1f6feb',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8b949e', maxRotation: 45 }, grid: { color: '#21262d' } },
+          y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+        }
+      }
+    });
+
+    // Colorize log
+    let colored = '';
+    data.log.split('\n').forEach(line => {
+      if (line.includes('[Master]')) colored += `<span class="master">${line}</span>\n`;
+      else if (line.includes('[Worker')) colored += `<span class="worker">${line}</span>\n`;
+      else if (line.includes('RESULTS') || line.includes('Total') || line.includes('Top'))
+        colored += `<span class="result">${line}</span>\n`;
+      else colored += line + '\n';
+    });
+    log.innerHTML = colored;
+    log.scrollTop = log.scrollHeight;
+
+  } catch(e) {
+    log.textContent = 'Request failed: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '▶ Run MapReduce';
+  }
 }
-
-buildWorkers(3,true);
 </script>
+
 </body>
 </html>
