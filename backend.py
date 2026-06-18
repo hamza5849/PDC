@@ -18,7 +18,7 @@ def run_mapreduce():
     start = time.time()
     try:
         result = subprocess.run(
-            ['mpirun', '--allow-run-as-root', '--oversubscribe', '-np', str(np), './mapreduce'],
+            ['mpirun', '-np', str(np), './mapreduce'],
             capture_output=True, text=True, timeout=60
         )
         elapsed = round((time.time() - start) * 1000)
